@@ -91,7 +91,7 @@ class EpiasTransparencyerServices:
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/consumption/data/realized-consumption", tgt, payload)
 
-    def demand_forecast(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+    def load_estimation_plan(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
         """5.4. Talep Tahmini Listeleme Servisi (Load Estimation Plan)"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/consumption/data/load-estimation-plan", tgt, payload)
@@ -105,8 +105,8 @@ class EpiasTransparencyerServices:
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/consumption/data/eligible-consumer-quantity", tgt, payload)
 
-    def real_time_consumption(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
-        """Gercek Zamanli Tuketim Servisi"""
+    def realtime_consumption(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Gerçek Zamanlı Tüketim (Real-Time Consumption)"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/consumption/data/realtime-consumption", tgt, payload)
 
@@ -114,14 +114,42 @@ class EpiasTransparencyerServices:
         """UE Tüketim Miktarı (Under Supply Consumption)"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/consumption/data/ue-consumption", tgt, payload)
+    
+    def demand_forecast(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Talep Tahmini (Demand Forecast)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/consumption/data/demand-forecast", tgt, payload)
+
+    def load_plan(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Yük Atma Planı (Load Shedding Plan)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/consumption/data/load-plan", tgt, payload)
 
     # ==========================================
     # 6. PRODUCTION (ÜRETİM) SERVICES
     # ==========================================
 
     def info_powerplant_list(self, tgt: str) -> requests.Response:
-        """Santral Listeleme Servisi (Powerplant List)"""
-        return self._post("v1/production/data/powerplant-list", tgt, {})
+        """Santral Listesi (Powerplant List)"""
+        return self._post("v1/generation/data/powerplant-list", tgt, {})
+
+    def info_organization_list(self, tgt: str) -> requests.Response:
+        """Organizasyon Listesi (Organization List)"""
+        return self._post("v1/markets/organization-list", tgt, {})
+
+    def info_consumer_count(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Tüketici Sayısı Listeleme (Consumer Count List)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/consumption/data/consumer-count", tgt, payload)
+
+    def info_distribution_region(self, tgt: str) -> requests.Response:
+        """Dağıtım Bölgesi Listesi (Distribution Region List)"""
+        return self._post("v1/consumption/data/distribution-region-list", tgt, {})
+    
+    def uevcb_list(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Uzlaştırmaya Esas Veriş Çekiş Birimi (UEVCB) Listesi"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/generation/data/uevcb-list", tgt, payload)
 
     def installed_capacity(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
         """Kurulu Güç Listeleme Servisi (Installed Capacity)"""
@@ -187,13 +215,18 @@ class EpiasTransparencyerServices:
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/production/data/fault-maintenance", tgt, payload)
 
+    def capacity_by_fuel_type(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Kurulu Güç (Installed Capacity by Fuel Type)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/generation/data/installed-capacity", tgt, payload)
+
     # ==========================================
     # 7. MARKET (PİYASALAR) SERVICES
     # ==========================================
 
     # --- DAM (GÖP) ---
-    def mcp(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
-        """PTF Listeleme Servisi (MCP - Market Clearing Price)"""
+    def dam_mcp(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Piyasa Takas Fiyatı - PTF (Market Clearing Price - MCP)"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/markets/dam/data/mcp", tgt, payload)
 
@@ -202,10 +235,20 @@ class EpiasTransparencyerServices:
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/markets/dam/data/amount-of-cleared-from-match", tgt, payload)
 
-    def dam_bid_offer(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
-        """GÖP Teklif Edilen Alış/Satış Miktarları"""
+    def dam_clearing_quantity(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Piyasa Takas Miktarı (Market Clearing Quantity)"""
         payload = self._format_dates(start_date, end_date)
-        return self._post("v1/markets/dam/data/submitted-bid-offer-volume", tgt, payload)
+        return self._post("v1/markets/dam/data/clearing-quantity", tgt, payload)
+
+    def dam_bid_offer(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """GÖP Teklif Miktarları (DAM Bid/Offer Quantities)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/markets/dam/data/bid-offer", tgt, payload)
+
+    def dam_block_bids(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Blok Teklifler (Block Bids)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/markets/dam/data/block-bid", tgt, payload)
 
     # --- IDM (GİP) ---
     def idm_matching_quantity(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
@@ -223,9 +266,19 @@ class EpiasTransparencyerServices:
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/markets/idm/data/weighted-average-price", tgt, payload)
 
+    def idm_trade_history(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """VGP İşlem Akışı (Trade History)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/markets/idm/data/trade-history", tgt, payload)
+
+    def idm_order_book(self, tgt: str, date: str) -> requests.Response:
+        """VGP Emir Defteri (Order Book) - Requires exact date"""
+        payload = {"date": f"{date}T00:00:00+03:00"}
+        return self._post("v1/markets/idm/data/order-book", tgt, payload)
+
     # --- BPM (DGP) ---
-    def smp(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
-        """SMF Listeleme Servisi (SMP - System Marginal Price)"""
+    def bpm_smp(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """Sistem Marjinal Fiyatı - SMF (System Marginal Price - SMP)"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/markets/bpm/data/smp", tgt, payload)
 
@@ -233,6 +286,21 @@ class EpiasTransparencyerServices:
         """Sıfır Bakiye Düzeltme Tutarı (Zero Balance)"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/markets/bpm/data/zero-balance", tgt, payload)
+    
+    def bpm_up_regulation(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """YAL Talimatları (Up Regulation Instructions)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/markets/bpm/data/up-regulation", tgt, payload)
+
+    def bpm_down_regulation(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """YAT Talimatları (Down Regulation Instructions)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/markets/bpm/data/down-regulation", tgt, payload)
+
+    def bilateral_contracts(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """İkili Anlaşma Miktarları (Bilateral Contracts Amount)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/markets/bilateral-contract/data/amount", tgt, payload)
 
     # ==========================================
     # 8. TRANSMISSION (İLETİM) SERVICES
@@ -247,6 +315,11 @@ class EpiasTransparencyerServices:
         """Uluslararası Hat Kapasiteleri (International Line Capacities)"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/transmission/data/international-line-capacities", tgt, payload)
+    
+    def line_maintenance_plan(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """İletim Hatları Bakım Planı (Line Maintenance Plan)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/transmission/data/maintenance-plan", tgt, payload)
 
     # ==========================================
     # 9. YEK-G SERVICES
@@ -260,3 +333,8 @@ class EpiasTransparencyerServices:
         """YEK-G Piyasası Takas Fiyatı"""
         payload = self._format_dates(start_date, end_date)
         return self._post("v1/environmental-markets/yek-g/data/mcp", tgt, payload)
+    
+    def yek_g_clearing_quantity(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
+        """YEK-G Eşleşme Miktarı (YEK-G Clearing Quantity)"""
+        payload = self._format_dates(start_date, end_date)
+        return self._post("v1/environmental-markets/yek-g/data/clearing-quantity", tgt, payload)

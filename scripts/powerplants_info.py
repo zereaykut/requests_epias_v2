@@ -18,13 +18,13 @@ def fetch_and_save_all_powerplants(service, tgt):
     response = service.info_powerplant_list(tgt)
     
     if response:
-        save_json(response.json(), "data/powerplants_info.json")
+        save_json(response.json(), "../data/powerplants_info_v2.json")
         logging.info("Powerplant info list successfully updated in data folder.")
 
 def main() -> None:
     tgt = get_tgt()
     if not tgt:
-        logging.error("TGT not found. Please run fetch_tgt.py first.")
+        logging.error("TGT not found. Please run tgt.py first.")
         return
 
     service = EpiasTransparencyerServices()

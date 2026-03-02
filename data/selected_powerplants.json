@@ -17,6 +17,24 @@
             "name": "3S KALE JES-40W000000012366M",
             "eic": "40W000000012366M",
             "shortName": "3S KALE JES"
+        },
+        {
+            "id": 1728,
+            "name": "\u00c7ANTA RES-40W000000007818V",
+            "eic": "40W000000007818V",
+            "shortName": "\u00c7ANTA RES"
+        },
+        {
+            "id": 2612,
+            "name": "S\u0130BEL RES-40W0000000156631",
+            "eic": "40W0000000156631",
+            "shortName": "S\u0130BEL RES"
+        },
+        {
+            "id": 2704,
+            "name": "\u00d6MERL\u0130 RES-40W000000016065G",
+            "eic": "40W000000016065G",
+            "shortName": "\u00d6MERL\u0130 RES"
         }
     ]
 }

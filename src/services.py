@@ -50,6 +50,30 @@ class EpiasTransparencyerServices:
         return {"startDate": start_date, "endDate": end_date}
 
     # ==========================================
+    # AUTHENTICATION SERVICE
+    # ==========================================
+
+    def tgt(self) -> requests.Response:
+        """Fetch the Ticket Granting Ticket (TGT) from EPIAS CAS."""
+        # Note: Make sure EPIAS_USERNAME and EPIAS_PASSWORD are set in your .env file
+        username = os.getenv("EPIAS_TRANSPARENCY_USERNAME")
+        password = os.getenv("EPIAS_TRANSPARENCY_PASSWORD")
+        
+        cas_url = "https://giris.epias.com.tr/cas/v1/tickets"
+        payload = {
+            "username": username,
+            "password": password
+        }
+        
+        # CAS typically requires form-urlencoded data and returns plain text
+        headers = {
+            "Accept": "text/plain",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        
+        return self.session.post(cas_url, data=payload, headers=headers)
+
+    # ==========================================
     # 5. CONSUMPTION (TÜKETİM) SERVICES
     # ==========================================
 
@@ -157,11 +181,6 @@ class EpiasTransparencyerServices:
         if powerplant_id:
             payload["powerPlantId"] = powerplant_id
         return self._post("v1/production/data/initial-daily-production-plan", tgt, payload)
-
-    def sfy_capacity(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
-        """SFY Kapasite Listeleme Servisi (AIC)"""
-        payload = self._format_dates(start_date, end_date)
-        return self._post("v1/production/data/aic", tgt, payload)
 
     def fault_maintenance(self, tgt: str, start_date: str, end_date: str) -> requests.Response:
         """Arıza Bakım Bildirimleri (Fault-Maintenance)"""

@@ -31,23 +31,49 @@ def get_tgt() -> Optional[str]:
     finally:
         conn.close()
 
-def get_selected_powerplants():
-    """Retrieves the list of selected powerplants to scrape."""
+def get_data(table_name: str) -> pd.DataFrame:
+    """Retrieve data fro given table name"""
+    conn = get_db_connection()
+    df = conn.execute(f"SELECT * FROM {table_name}").df()
+    conn.close()
+    return df
+
+def get_powerplants_info():
+    """Retrieves the dataframe for the info about powerplants to scrape."""
     conn = get_db_connection()
     try:
-        # If you have populated a table named 'selected_powerplants'
-        df = conn.execute("SELECT * FROM selected_powerplants").df()
-        return df.to_dict(orient="records")
+        df_info_powerplant_list = conn.execute(f"SELECT * FROM info_powerplant_list").df()
+        df_info_organization_list = conn.execute(f"SELECT * FROM info_organization_list").df()
+        df_info_uevcb_list = conn.execute(f"SELECT * FROM info_uevcb_list").df()
+        df_info_powerplant_list_by_organization_id = conn.execute(f"SELECT * FROM info_powerplant_list_by_organization_id").df()
+
+        df_info_powerplant_list = df_info_powerplant_list.rename(columns={
+            "id": "realtimeGenerationId",
+            "name": "realtimeGenerationName",
+            "shortName": "realtimeGenerationShortName",
+            "eic": "powerPlantEic"
+        })
+
+        df_info_uevcb_list = df_info_uevcb_list.rename(columns={
+            "id": "uevcbId",
+            "name": "uevcbName",
+            "eic": "uevcbEic",
+            "organization_id": "organizationId"
+        })
+
+        df_info_powerplant_list_by_organization_id = df_info_powerplant_list_by_organization_id.rename(columns={
+            "id": "powerPlantId",
+            "name": "powerPlantName",
+            "eic": "powerPlantEic",
+            "organization_id": "organizationId"
+        }).drop(columns=["shortName"])
+
+        df1 = pd.merge(df_info_organization_list, df_info_uevcb_list, on=["organizationId"], how="outer")
+        df2 = pd.merge(df_info_powerplant_list_by_organization_id, df_info_powerplant_list, on=["powerPlantEic"], how="outer")
+        df = pd.merge(df1, df2, on=["organizationId"], how="outer")
+        return df
     except duckdb.CatalogException:
         logging.warning("Table 'selected_powerplants' does not exist. Using fallback data.")
-        return [
-            {
-                "id": 1728,
-                "name": "ÇANTA RES-40W000000007818V",
-                "eic": "40W000000007818V",
-                "shortName": "ÇANTA RES"
-            }
-        ]
     finally:
         conn.close()
 
